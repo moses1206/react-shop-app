@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon } from 'antd';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
 
 export default function FileUpload() {
+  const [Images, setImages] = useState([]);
+
   const dropHandler = (files) => {
     let formData = new FormData();
     const config = {
@@ -13,30 +15,62 @@ export default function FileUpload() {
 
     axios.post('/api/product/image', formData, config).then((response) => {
       if (response.data.success) {
+        setImages([...Images, response.data.filePath]);
       } else {
         alert('파일을 저장하는데 실패하였습니다.!');
       }
     });
   };
 
+  const deleteHandler = (image) => {
+    const currentIndex = Images.indexOf(image);
+    console.log(currentIndex);
+
+    let newImages = [...Images];
+    // 인덱스 번호가 currentIndex인 값을 1개 지운다
+    newImages.splice(currentIndex, 1);
+    setImages(newImages);
+  };
+
   return (
-    <Dropzone onDrop={dropHandler}>
-      {({ getRootProps, getInputProps }) => (
-        <div
-          style={{
-            width: 300,
-            height: 240,
-            border: '1px solid lightgray',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          {...getRootProps()}
-        >
-          <input {...getInputProps()} />
-          <Icon type='plus' style={{ fontSize: '3rem' }} />
-        </div>
-      )}
-    </Dropzone>
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Dropzone onDrop={dropHandler}>
+        {({ getRootProps, getInputProps }) => (
+          <div
+            style={{
+              width: 300,
+              height: 240,
+              border: '1px solid lightgray',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            {...getRootProps()}
+          >
+            <input {...getInputProps()} />
+            <Icon type='plus' style={{ fontSize: '3rem' }} />
+          </div>
+        )}
+      </Dropzone>
+
+      <div
+        style={{
+          display: 'flex',
+          width: '350px',
+          height: '240px',
+          overflowX: 'scroll',
+        }}
+      >
+        {Images.map((image, index) => (
+          <div onClick={() => deleteHandler(image)} key={index}>
+            <img
+              style={{ minWidth: '300px', width: '300px', height: '240px' }}
+              src={`http://localhost:5000/${image}`}
+              alt='productImage'
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
