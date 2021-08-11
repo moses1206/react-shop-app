@@ -3,7 +3,7 @@ import { Icon } from 'antd';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
 
-export default function FileUpload() {
+export default function FileUpload(props) {
   const [Images, setImages] = useState([]);
 
   const dropHandler = (files) => {
@@ -16,6 +16,7 @@ export default function FileUpload() {
     axios.post('/api/product/image', formData, config).then((response) => {
       if (response.data.success) {
         setImages([...Images, response.data.filePath]);
+        props.refreshFunction([...Images, response.data.filePath]);
       } else {
         alert('파일을 저장하는데 실패하였습니다.!');
       }
@@ -30,6 +31,7 @@ export default function FileUpload() {
     // 인덱스 번호가 currentIndex인 값을 1개 지운다
     newImages.splice(currentIndex, 1);
     setImages(newImages);
+    props.refreshFunction(newImages);
   };
 
   return (
