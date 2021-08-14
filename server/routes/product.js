@@ -47,13 +47,20 @@ router.post('/', auth, (req, res) => {
 });
 
 router.post('/getproducts', auth, (req, res) => {
+  let limit = req.body.limit ? parseInt(req.body.limit) : 30;
+  let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+
   // product collection의 모든 상품정보를 가져오기
   Product.find()
     .populate('writer')
+    .skip(skip)
+    .limit(limit)
     .exec((err, productsInfo) => {
       if (err) return res.status(400).json({ success: false, err });
 
-      return res.status(200).json({ success: true, productsInfo });
+      return res
+        .status(200)
+        .json({ success: true, productsInfo, postLength: productsInfo.length });
     });
 });
 
