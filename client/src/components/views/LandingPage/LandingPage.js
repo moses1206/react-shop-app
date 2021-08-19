@@ -10,9 +10,13 @@ function LandingPage() {
 
   const [Skip, setSkip] = useState(0);
   // eslint-disable-next-line
-  const [Limit, setLimit] = useState(4);
+  const [Limit, setLimit] = useState(8);
 
   const [PostSize, setPostSize] = useState(0);
+  const [Filters, setFilters] = useState({
+    continents: [],
+    price: [],
+  });
 
   const getProducts = (body) => {
     Axios.post('/api/product/getproducts', body).then((response) => {
@@ -52,6 +56,27 @@ function LandingPage() {
     setSkip(skip);
   };
 
+  const showFilteredResults = (filters) => {
+    let body = {
+      // 필터를 누를때마다 skip을 0으로 줘서 모든것을 가져와서 필터링하게 한다.
+      skip: 0,
+      limit: Limit,
+      filters: filters,
+    };
+
+    getProducts(body);
+
+    setSkip(0);
+  };
+
+  const handleFilters = (filters, category) => {
+    const newFilters = { ...Filters };
+
+    newFilters[category] = filters;
+
+    showFilteredResults(newFilters);
+  };
+
   const renderCards = Products.map((product, index) => {
     return (
       <Col key={index} lg={6} md={8} sm={24}>
@@ -72,7 +97,10 @@ function LandingPage() {
       {/* Filter */}
 
       {/* CheckBox */}
-      <CheckBox list={continents} />
+      <CheckBox
+        list={continents}
+        handleFilters={(filters) => handleFilters(filters, 'continents')}
+      />
 
       {/* RadioBox */}
 

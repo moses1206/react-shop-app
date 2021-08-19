@@ -8,7 +8,7 @@ export default function ImageSlider(props) {
         {props.images.map((image, index) => (
           <div key={index}>
             <img
-              style={{ width: '280px', height: '150px', objectFit: 'cover' }}
+              style={{ width: '100%', height: '160px', objectFit: 'cover' }}
               src={`http://localhost:5000/${image}`}
               alt='Carousel'
             />
